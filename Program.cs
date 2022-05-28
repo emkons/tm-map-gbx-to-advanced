@@ -1,17 +1,36 @@
 ﻿using GBX.NET;
 using GBX.NET.Engines.Game;
+using System.Windows.Forms;
 using System;
 using System.IO;
 
-foreach (var fileName in args)
+class Program
 {
-    var node = GameBox.ParseNode(fileName);
-
-    if (node is CGameCtnChallenge map)
+    [STAThread]    
+    static void Main(string[] args)
     {
-        map.Editor = CGameCtnChallenge.EditorMode.Advanced;
+        using (OpenFileDialog openFileDialog = new OpenFileDialog())
+        {
+            var documents = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
+            openFileDialog.InitialDirectory = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Trackmania", "Maps");
+            openFileDialog.Filter = "TM maps (*.Map.Gbx)|*.Map.Gbx";
+            openFileDialog.FilterIndex = 1;
+            openFileDialog.RestoreDirectory = true;
 
-        var savePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, Path.GetFileName(fileName));
-        map.Save(savePath);
+            if (openFileDialog.ShowDialog() == DialogResult.OK)
+            {
+                var filePath = openFileDialog.FileName;
+
+                var node = GameBox.ParseNode(filePath);
+
+                if (node is CGameCtnChallenge map)
+                {
+                    map.Editor = CGameCtnChallenge.EditorMode.Advanced;
+
+                    var savePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, Path.GetFileName(filePath));
+                    map.Save(savePath);
+                }
+            }
+        }
     }
 }
