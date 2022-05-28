@@ -16,19 +16,23 @@ class Program
             openFileDialog.Filter = "TM maps (*.Map.Gbx)|*.Map.Gbx";
             openFileDialog.FilterIndex = 1;
             openFileDialog.RestoreDirectory = true;
+            openFileDialog.Multiselect = true;
 
             if (openFileDialog.ShowDialog() == DialogResult.OK)
             {
-                var filePath = openFileDialog.FileName;
+                foreach (String file in openFileDialog.FileNames) {
+                    var filePath = file;
 
-                var node = GameBox.ParseNode(filePath);
+                    var node = GameBox.ParseNode(filePath);
 
-                if (node is CGameCtnChallenge map)
-                {
-                    map.Editor = CGameCtnChallenge.EditorMode.Advanced;
+                    if (node is CGameCtnChallenge map)
+                    {
+                        map.Editor = CGameCtnChallenge.EditorMode.Advanced;
+                        map.MapName = map.MapName + "Advanced";
 
-                    var savePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, Path.GetFileName(filePath));
-                    map.Save(savePath);
+                        var savePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Advanced_" + Path.GetFileName(filePath));
+                        map.Save(savePath);
+                    }
                 }
             }
         }
